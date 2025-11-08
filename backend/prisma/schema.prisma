@@ -3,7 +3,6 @@
 
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -12,4 +11,83 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  notes        Note[]
+  ratings      Rating[]
+  comments     Comment[]
+}
+
+model School {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  departments Department[]
+  notes       Note[]
+}
+
+model Department {
+  id        Int       @id @default(autoincrement())
+  schoolId  Int
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  school    School    @relation(fields: [schoolId], references: [id])
+  notes     Note[]
+}
+
+model Note {
+  id           String    @id @default(uuid())
+  userId       String
+  schoolId     Int
+  departmentId Int
+  className    String?
+  teacher      String?
+  title        String
+  description  String?
+  fileUrl      String
+  avgRating    Float?     // Opsiyonel, rating hesaplandıkça güncellenecek
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id])
+  school     School     @relation(fields: [schoolId], references: [id])
+  department Department @relation(fields: [departmentId], references: [id])
+  ratings    Rating[]
+  comments   Comment[]
+}
+
+model Rating {
+  id        String   @id @default(uuid())
+  userId    String
+  noteId    String
+  rating    Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  note Note @relation(fields: [noteId], references: [id])
+
+  @@unique([userId, noteId]) // Aynı kullanıcı aynı notu birden fazla puanlayamaz
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  userId    String
+  noteId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  note Note @relation(fields: [noteId], references: [id])
 }
