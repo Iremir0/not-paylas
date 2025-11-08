@@ -2,6 +2,7 @@ import express from 'express';
 import prisma from '../prismaClient.js';
 import multer from 'multer';
 import AWS from 'aws-sdk';
+import { auth } from '../middleware/auth.js';
 const router = express.Router();
 const s3 = new AWS.S3({
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -9,7 +10,7 @@ const s3 = new AWS.S3({
 });
 const upload = multer({ storage: multer.memoryStorage() });
 // CREATE note with file upload
-router.post('/', upload.single('file'), async (req, res, next) => {
+router.post('/', auth, upload.single('file'), async (req, res, next) => {
     try {
         const { userId, schoolId, departmentId, className, teacher, title, description } = req.body;
         if (!req.file)
@@ -49,7 +50,7 @@ router.get('/', async (req, res, next) => {
     }
 });
 // DELETE note
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', auth, async (req, res, next) => {
     try {
         await prisma.note.delete({ where: { id: req.params.id } });
         res.json({ message: "Note deleted" });

@@ -4,15 +4,14 @@ import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 dotenv.config();
 
-import usersRoute from './routes/users';
-import schoolsRoute from './routes/schools';
-import departmentsRoute from './routes/departments';
-import classesRoute from './routes/classes';
-import notesRoute from './routes/notes';
-import ratingsRoute from './routes/ratings';
-import commentsRoute from './routes/comments';
+import usersRoute from './routes/users.js';
+import schoolsRoute from './routes/schools.js';
+import departmentsRoute from './routes/departments.js';
+import notesRoute from './routes/notes.js';
+import ratingsRoute from './routes/ratings.js';
+import commentsRoute from './routes/comments.js';
 
-import { errorHandler } from './middleware/errorHandler';
+import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
 app.use(cors());
@@ -21,7 +20,6 @@ app.use(bodyParser.json());
 app.use('/users', usersRoute);
 app.use('/schools', schoolsRoute);
 app.use('/departments', departmentsRoute);
-app.use('/classes', classesRoute);
 app.use('/notes', notesRoute);
 app.use('/ratings', ratingsRoute);
 app.use('/comments', commentsRoute);

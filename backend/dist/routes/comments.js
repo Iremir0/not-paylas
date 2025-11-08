@@ -1,5 +1,6 @@
 import express from 'express';
 import prisma from '../prismaClient.js';
+import { auth } from '../middleware/auth.js';
 const router = express.Router();
 // GET all comments
 router.get('/', async (req, res, next) => {
@@ -22,7 +23,7 @@ router.get('/:id', async (req, res, next) => {
     }
 });
 // CREATE comment
-router.post('/', async (req, res, next) => {
+router.post('/', auth, async (req, res, next) => {
     try {
         const { userId, noteId, content } = req.body;
         const newComment = await prisma.comment.create({
@@ -35,7 +36,7 @@ router.post('/', async (req, res, next) => {
     }
 });
 // UPDATE comment
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', auth, async (req, res, next) => {
     try {
         const { content } = req.body;
         const updatedComment = await prisma.comment.update({
@@ -49,7 +50,7 @@ router.put('/:id', async (req, res, next) => {
     }
 });
 // DELETE comment
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', auth, async (req, res, next) => {
     try {
         await prisma.comment.delete({ where: { id: req.params.id } });
         res.json({ message: "Comment deleted" });
