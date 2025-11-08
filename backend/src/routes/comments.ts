@@ -1,6 +1,7 @@
 import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import prisma from '../prismaClient.js';
+import { auth } from '../middleware/auth.js';
 const router = express.Router();
 
 // GET all comments
@@ -20,7 +21,7 @@ router.get('/:id', async (req: Request, res: Response, next: NextFunction) => {
 });
 
 // CREATE comment
-router.post('/', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/', auth,async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { userId, noteId, content } = req.body;
         const newComment = await prisma.comment.create({
@@ -31,7 +32,7 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 });
 
 // UPDATE comment
-router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
+router.put('/:id',auth, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { content } = req.body;
         const updatedComment = await prisma.comment.update({
@@ -43,7 +44,7 @@ router.put('/:id', async (req: Request, res: Response, next: NextFunction) => {
 });
 
 // DELETE comment
-router.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
+router.delete('/:id',auth, async (req: Request, res: Response, next: NextFunction) => {
     try {
         await prisma.comment.delete({ where: { id: req.params.id } });
         res.json({ message: "Comment deleted" });

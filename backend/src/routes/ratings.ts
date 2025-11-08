@@ -1,10 +1,12 @@
 import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import prisma from '../prismaClient.js';
+import { auth } from '../middleware/auth.js';
+
 const router = express.Router();
 
 // CREATE rating & update avgRating
-router.post('/', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/', auth, async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { userId, noteId, rating } = req.body;
 
